@@ -14,9 +14,14 @@ include "region" {
 }
 
 terraform {
-  source = "../../../../../modules/kms"
+  source = "../../../../modules/s3"
+}
+
+dependency "kms" {
+  config_path = "../kms"
 }
 
 inputs = {
   environment = include.environment.locals.environment
+  kms_key_arn = dependency.kms.outputs.key_arn
 }

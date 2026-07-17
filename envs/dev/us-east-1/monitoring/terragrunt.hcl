@@ -14,7 +14,7 @@ include "region" {
 }
 
 terraform {
-  source = "../../../../../modules/monitoring"
+  source = "../../../../modules/monitoring"
 }
 
 dependency "kinesis" {

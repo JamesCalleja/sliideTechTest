@@ -14,14 +14,9 @@ include "region" {
 }
 
 terraform {
-  source = "../../../../../modules/kinesis"
-}
-
-dependency "kms" {
-  config_path = "../kms"
+  source = "../../../../modules/kms"
 }
 
 inputs = {
   environment = include.environment.locals.environment
-  kms_key_arn = dependency.kms.outputs.key_arn
 }

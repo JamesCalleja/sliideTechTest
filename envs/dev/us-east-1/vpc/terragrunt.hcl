@@ -14,7 +14,7 @@ include "region" {
 }
 
 terraform {
-  source = "../../../../../modules/vpc"
+  source = "../../../../modules/vpc"
 }
 
 inputs = {

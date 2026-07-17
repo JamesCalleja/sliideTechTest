@@ -14,7 +14,7 @@ include "region" {
 }
 
 terraform {
-  source = "../../../../../modules/api-gateway"
+  source = "../../../../modules/api-gateway"
 }
 
 dependency "kms" {

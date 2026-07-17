@@ -63,20 +63,19 @@ sliideTechTest/
 │   └── monitoring/                     # CloudWatch Alarms & SNS alerting infrastructure
 └── envs/
     ├── root.hcl                        # Global Terragrunt state backend and provider generation
-    └── sliide/
-        ├── proposition.hcl             # Product line/proposition variables
-        └── dev/
-            ├── environment.hcl         # Environment (dev) configurations
-            └── us-east-1/
-                ├── region.hcl          # Region-specific CIDR, availability zones, and state bucket parameters
-                ├── kms/terragrunt.hcl
-                ├── vpc/terragrunt.hcl
-                ├── s3/terragrunt.hcl
-                ├── kinesis/terragrunt.hcl
-                ├── api-gateway/terragrunt.hcl
-                ├── firehose/terragrunt.hcl
-                ├── lambda/terragrunt.hcl
-                └── monitoring/terragrunt.hcl
+    ├── proposition.hcl                 # Product line/proposition variables
+    └── dev/
+        ├── environment.hcl             # Environment (dev) configurations
+        └── us-east-1/
+            ├── region.hcl              # Region-specific CIDR, availability zones, and state bucket parameters
+            ├── kms/terragrunt.hcl
+            ├── vpc/terragrunt.hcl
+            ├── s3/terragrunt.hcl
+            ├── kinesis/terragrunt.hcl
+            ├── api-gateway/terragrunt.hcl
+            ├── firehose/terragrunt.hcl
+            ├── lambda/terragrunt.hcl
+            └── monitoring/terragrunt.hcl
 ```
 
 ---
@@ -116,7 +115,7 @@ Once authentication is set up locally, you can deploy the complete infrastructur
 
 1. Change directory to the target environment region:
    ```bash
-   cd envs/sliide/dev/us-east-1
+   cd envs/dev/us-east-1
    ```
 2. Run a global plan to inspect the changes:
    ```bash
@@ -185,7 +184,7 @@ To clean up and destroy all resources created during this POC to avoid unwanted 
 ### Step 1: Destroying Terragrunt Infrastructure
 From your local terminal, navigate to the target region directory and execute a full destroy:
 ```bash
-cd envs/sliide/dev/us-east-1
+cd envs/dev/us-east-1
 terragrunt run-all destroy
 ```
 

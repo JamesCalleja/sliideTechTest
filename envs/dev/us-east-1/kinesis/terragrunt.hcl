@@ -14,7 +14,7 @@ include "region" {
 }
 
 terraform {
-  source = "../../../../../modules/s3"
+  source = "../../../../modules/kinesis"
 }
 
 dependency "kms" {

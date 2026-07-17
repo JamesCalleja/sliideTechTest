@@ -14,26 +14,25 @@ include "region" {
 }
 
 terraform {
-  source = "../../../../../modules/firehose"
+  source = "../../../../modules/lambda"
 }
 
 dependency "kms" {
   config_path = "../kms"
 }
 
+dependency "vpc" {
+  config_path = "../vpc"
+}
+
 dependency "kinesis" {
   config_path = "../kinesis"
 }
 
-dependency "s3" {
-  config_path = "../s3"
-}
-
 inputs = {
   environment        = include.environment.locals.environment
-  region             = include.region.locals.region
+  vpc_id             = dependency.vpc.outputs.vpc_id
+  private_subnet_ids = dependency.vpc.outputs.private_subnet_ids
   kinesis_stream_arn = dependency.kinesis.outputs.stream_arn
-  s3_bucket_arn      = dependency.s3.outputs.bucket_arn
-  s3_bucket_name     = dependency.s3.outputs.bucket_name
   kms_key_arn        = dependency.kms.outputs.key_arn
 }
