@@ -113,15 +113,19 @@ If you are deploying to a brand-new or clean AWS Account, you must initialize th
 ### Step 2: Deploying the Pipeline
 Once authentication is set up locally, you can deploy the complete infrastructure stack:
 
-1. Change directory to the target environment region:
+1. Change directory to the root of the cloned repository:
+   ```bash
+   cd sliideTechTest
+   ```
+2. Change directory to the target environment region:
    ```bash
    cd envs/dev/us-east-1
    ```
-2. Run a global plan to inspect the changes:
+3. Run a global plan to inspect the changes:
    ```bash
    terragrunt run --all plan
    ```
-3. Deploy the entire stack (Terragrunt automatically respects module dependencies like VPC -> KMS -> S3 -> Kinesis -> API Gateway / Firehose / Lambda -> Monitoring):
+4. Deploy the entire stack (Terragrunt automatically respects module dependencies like VPC -> KMS -> S3 -> Kinesis -> API Gateway / Firehose / Lambda -> Monitoring):
    ```bash
    terragrunt run --all apply
    ```
