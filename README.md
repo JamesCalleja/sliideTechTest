@@ -119,11 +119,11 @@ Once authentication is set up locally, you can deploy the complete infrastructur
    ```
 2. Run a global plan to inspect the changes:
    ```bash
-   terragrunt run-all plan
+   terragrunt run --all plan
    ```
 3. Deploy the entire stack (Terragrunt automatically respects module dependencies like VPC -> KMS -> S3 -> Kinesis -> API Gateway / Firehose / Lambda -> Monitoring):
    ```bash
-   terragrunt run-all apply
+   terragrunt run --all apply
    ```
 
 ---
@@ -185,7 +185,7 @@ To clean up and destroy all resources created during this POC to avoid unwanted 
 From your local terminal, navigate to the target region directory and execute a full destroy:
 ```bash
 cd envs/dev/us-east-1
-terragrunt run-all destroy
+terragrunt run --all destroy
 ```
 
 ### Step 2: Undoing the Bootstrapper
