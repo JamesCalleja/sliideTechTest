@@ -328,9 +328,9 @@ aws iam attach-user-policy \
 echo "Generating Access Keys for $USER_NAME..."
 KEYS_JSON=$(aws iam create-access-key --user-name "$USER_NAME")
 
-# Parse access keys using python3 (pre-installed in CloudShell)
-ACCESS_KEY_ID=$(echo "$KEYS_JSON" | python3 -c "import sys, json; print(json.load(sys.stdin)['AccessKey']['AccessKeyId'])")
-SECRET_ACCESS_KEY=$(echo "$KEYS_JSON" | python3 -c "import sys, json; print(json.load(sys.stdin)['AccessKey']['SecretAccessKey'])")
+# Parse access keys using jq (pre-installed in CloudShell)
+ACCESS_KEY_ID=$(echo "$KEYS_JSON" | jq -r '.AccessKey.AccessKeyId')
+SECRET_ACCESS_KEY=$(echo "$KEYS_JSON" | jq -r '.AccessKey.SecretAccessKey')
 
 echo "----------------------------------------"
 echo "BOOTSTRAP COMPLETE!"
