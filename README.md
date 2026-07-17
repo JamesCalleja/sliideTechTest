@@ -48,7 +48,9 @@ The project conforms to the standard hierarchical Terragrunt environment layout:
 
 ```text
 sliideTechTest/
-├── bootstrap.sh                        # CloudShell bootstrapping script for vanilla AWS accounts (with scoped IAM policy)
+├── scripts/
+│   ├── bootstrap.sh                    # CloudShell bootstrapping script for vanilla AWS accounts (with scoped IAM policy)
+│   └── teardown.sh                     # Teardown script to undo all bootstrap actions
 ├── README.md                           # This documentation file
 ├── modules/                            # Modularized, reusable Terraform components (using AWS curated modules)
 │   ├── kms/                            # KMS Encryption keys for SSE-KMS
@@ -94,7 +96,7 @@ If you are deploying to a brand-new or clean AWS Account, you must initialize th
 
 1. Log in to the **AWS Console** as root (or an administrator).
 2. Open **AWS CloudShell** (the terminal icon in the top right header).
-3. Copy the contents of [`bootstrap.sh`](file:///C:/code/sliideTechTest/bootstrap.sh) and paste it into the CloudShell console.
+3. Copy the contents of [`bootstrap.sh`](file:///C:/code/sliideTechTest/scripts/bootstrap.sh) and paste it into the CloudShell console.
 4. Run the script. This creates:
    - The S3 state bucket (`sliide-tfstate-<account-id>-us-east-1`)
    - The DynamoDB state lock table (`sliide-tflocks`)
@@ -166,6 +168,6 @@ terragrunt run-all destroy
 
 ### Step 2: Undoing the Bootstrapper
 Once the main infrastructure has been destroyed, you can delete the S3 state bucket, DynamoDB lock table, and the IAM runner user/policy by running the teardown script in **AWS CloudShell**:
-1. Copy the contents of [`teardown.sh`](file:///C:/code/sliideTechTest/teardown.sh) and paste it into AWS CloudShell.
+1. Copy the contents of [`teardown.sh`](file:///C:/code/sliideTechTest/scripts/teardown.sh) and paste it into AWS CloudShell.
 2. Execute the script. It will clean out all versioned state files, delete the state bucket and locking table, and cleanly remove the `terragrunt-runner` IAM configurations.
 
