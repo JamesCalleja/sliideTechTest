@@ -20,16 +20,21 @@ echo "IAM Runner User: $USER_NAME"
 echo "----------------------------------------"
 
 # 1. Create S3 Bucket for Terraform State
-echo "Creating S3 bucket for Terraform State..."
-if [ "$REGION" = "us-east-1" ]; then
-  aws s3api create-bucket \
-    --bucket "$BUCKET_NAME" \
-    --region "$REGION"
+echo "Checking S3 state bucket..."
+if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
+  echo "S3 state bucket $BUCKET_NAME already exists. Skipping creation."
 else
-  aws s3api create-bucket \
-    --bucket "$BUCKET_NAME" \
-    --region "$REGION" \
-    --create-bucket-configuration LocationConstraint="$REGION"
+  echo "Creating S3 bucket for Terraform State..."
+  if [ "$REGION" = "us-east-1" ]; then
+    aws s3api create-bucket \
+      --bucket "$BUCKET_NAME" \
+      --region "$REGION"
+  else
+    aws s3api create-bucket \
+      --bucket "$BUCKET_NAME" \
+      --region "$REGION" \
+      --create-bucket-configuration LocationConstraint="$REGION"
+  fi
 fi
 
 # Block public access to the state bucket
@@ -51,17 +56,27 @@ aws s3api put-bucket-encryption \
   --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
 
 # 2. Create DynamoDB Table for State Locking
-echo "Creating DynamoDB table for state locking..."
-aws dynamodb create-table \
-  --table-name "$DYNAMODB_TABLE" \
-  --attribute-definitions AttributeName=LockID,AttributeType=S \
-  --key-schema AttributeName=LockID,KeyType=HASH \
-  --billing-mode PAY_PER_REQUEST \
-  --region "$REGION"
+echo "Checking DynamoDB lock table..."
+if aws dynamodb describe-table --table-name "$DYNAMODB_TABLE" --region "$REGION" >/dev/null 2>&1; then
+  echo "DynamoDB table $DYNAMODB_TABLE already exists. Skipping creation."
+else
+  echo "Creating DynamoDB table for state locking..."
+  aws dynamodb create-table \
+    --table-name "$DYNAMODB_TABLE" \
+    --attribute-definitions AttributeName=LockID,AttributeType=S \
+    --key-schema AttributeName=LockID,KeyType=HASH \
+    --billing-mode PAY_PER_REQUEST \
+    --region "$REGION"
+fi
 
 # 3. Create IAM User
-echo "Creating IAM User ($USER_NAME)..."
-aws iam create-user --user-name "$USER_NAME"
+echo "Checking IAM User ($USER_NAME)..."
+if aws iam get-user --user-name "$USER_NAME" >/dev/null 2>&1; then
+  echo "IAM User $USER_NAME already exists. Skipping creation."
+else
+  echo "Creating IAM User ($USER_NAME)..."
+  aws iam create-user --user-name "$USER_NAME"
+fi
 
 # 4. Create and Attach Scoped IAM Policy
 echo "Creating granular IAM policy document..."
