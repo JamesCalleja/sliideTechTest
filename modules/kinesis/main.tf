@@ -7,10 +7,8 @@ resource "aws_kinesis_stream" "events_stream" {
     stream_mode = "PROVISIONED"
   }
 
-  server_side_encryption {
-    encryption_type = "KMS"
-    key_id          = var.kms_key_arn
-  }
+  encryption_type = "KMS"
+  kms_key_id      = var.kms_key_arn
 
   tags = {
     Name        = "sliide-events-stream-${var.environment}"
