@@ -91,17 +91,21 @@ Before deployment, make sure you have the following installed locally:
 ---
 
 ### Step 1: Bootstrapping a Vanilla AWS Account
-If you are deploying to a brand-new or clean AWS Account, you must initialize the remote state bucket and provisioning runner in **AWS CloudShell**:
+If you are deploying to a brand-new or clean AWS Account, you must initialize the remote state bucket and provisioning runner. Since the repository is private, the most frictionless way to do this in **AWS CloudShell** is to paste the script directly:
 
-1. Log in to the **AWS Console** as root (or an administrator).
+1. Log in to the **AWS Console** as **root** (or an administrator user).
 2. Open **AWS CloudShell** (the terminal icon in the top right header).
-3. Clone your private repository inside CloudShell:
+3. Create the file and paste the contents of [`scripts/bootstrap.sh`](file:///C:/code/sliideTechTest/scripts/bootstrap.sh):
    ```bash
-   gh repo clone JamesCalleja/sliideTechTest
-   cd sliideTechTest
-   bash scripts/bootstrap.sh
+   cat << 'EOF' > bootstrap.sh
+   # (Paste the full contents of scripts/bootstrap.sh here)
+   EOF
    ```
-4. The script will output the credentials block. Copy the block for your local shell of choice:
+4. Run the script:
+   ```bash
+   bash bootstrap.sh
+   ```
+5. The script will output the credentials block. Copy the block for your local shell of choice:
 
    **For Windows PowerShell:**
    ```powershell
@@ -224,10 +228,17 @@ terragrunt run -- run-all destroy
 ```
 
 ### Step 2: Undoing the Bootstrapper
-Once the main infrastructure has been destroyed, navigate to the cloned repository in **AWS CloudShell** and run the teardown script:
-```bash
-cd ~/sliideTechTest
-bash scripts/teardown.sh
-```
+Once the main infrastructure has been destroyed, log in to the **AWS Console** as **root/admin**, open **AWS CloudShell**, and paste the teardown script:
+
+1. Create the file and paste the contents of [`scripts/teardown.sh`](file:///C:/code/sliideTechTest/scripts/teardown.sh):
+   ```bash
+   cat << 'EOF' > teardown.sh
+   # (Paste the full contents of scripts/teardown.sh here)
+   EOF
+   ```
+2. Run the script:
+   ```bash
+   bash teardown.sh
+   ```
 
 
