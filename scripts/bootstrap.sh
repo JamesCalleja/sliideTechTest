@@ -121,7 +121,10 @@ cat <<EOF > /tmp/sliide_poc_policy.json
         "kms:TagResource",
         "kms:UntagResource",
         "kms:ScheduleKeyDeletion",
-        "kms:CancelKeyDeletion"
+        "kms:CancelKeyDeletion",
+        "kms:EnableKeyRotation",
+        "kms:DisableKeyRotation",
+        "kms:GetKeyRotationStatus"
       ],
       "Resource": "*"
     },
@@ -339,15 +342,25 @@ aws iam attach-user-policy \
   --user-name "$USER_NAME" \
   --policy-arn "$POLICY_ARN"
 
+# Clean up any existing access keys first to ensure creation of a fresh key pair succeeds
+echo "Cleaning up any existing access keys for $USER_NAME..."
+EXISTING_KEYS=$(aws iam list-access-keys --user-name "$USER_NAME" --query "AccessKeyMetadata[].AccessKeyId" --output text 2>/dev/null || echo "")
+for key in $EXISTING_KEYS; do
+  if [ "$key" != "None" ] && [ ! -z "$key" ]; then
+    echo "Deleting old access key: $key"
+    aws iam delete-access-key --user-name "$USER_NAME" --access-key-id "$key"
+  fi
+done
+
 # Create Access Keys
-echo "Generating Access Keys for $USER_NAME..."
+echo "Generating new Access Keys for $USER_NAME..."
 KEYS_JSON=$(aws iam create-access-key --user-name "$USER_NAME")
 
-# Parse access keys using jq (pre-installed in CloudShell)
+# Parse access keys using jq
 ACCESS_KEY_ID=$(echo "$KEYS_JSON" | jq -r '.AccessKey.AccessKeyId')
 SECRET_ACCESS_KEY=$(echo "$KEYS_JSON" | jq -r '.AccessKey.SecretAccessKey')
 
-echo "----------------------------------------"
+echo "------------------------------------------------------"
 echo "BOOTSTRAP COMPLETE!"
 echo "S3 Bucket:             $BUCKET_NAME"
 echo "DynamoDB Lock Table:   $DYNAMODB_TABLE"
@@ -356,11 +369,23 @@ echo "IAM Granular Policy:   $POLICY_ARN"
 echo "AWS_ACCESS_KEY_ID:     $ACCESS_KEY_ID"
 echo "AWS_SECRET_ACCESS_KEY: $SECRET_ACCESS_KEY"
 echo "AWS_DEFAULT_REGION:    $REGION"
-echo "----------------------------------------"
-echo "Run the following commands in your terminal to authenticate as the runner:"
+echo "------------------------------------------------------"
+echo "To authenticate as the runner, copy and paste the commands below into your local terminal:"
 echo ""
+echo "=== Option A: For Bash / Git Bash / Linux / macOS ==="
 echo "export AWS_ACCESS_KEY_ID=\"$ACCESS_KEY_ID\""
 echo "export AWS_SECRET_ACCESS_KEY=\"$SECRET_ACCESS_KEY\""
 echo "export AWS_DEFAULT_REGION=\"$REGION\""
 echo ""
+echo "=== Option B: For Windows PowerShell ==="
+echo "\$env:AWS_ACCESS_KEY_ID=\"$ACCESS_KEY_ID\""
+echo "\$env:AWS_SECRET_ACCESS_KEY=\"$SECRET_ACCESS_KEY\""
+echo "\$env:AWS_DEFAULT_REGION=\"$REGION\""
+echo ""
+echo "=== Option C: For Windows Command Prompt (CMD) ==="
+echo "set AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID"
+echo "set AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY"
+echo "set AWS_DEFAULT_REGION=$REGION"
+echo "------------------------------------------------------"
 echo "Please save these credentials immediately, as the Secret Access Key cannot be retrieved again."
+
