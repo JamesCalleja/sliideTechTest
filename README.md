@@ -91,11 +91,16 @@ Before deployment, make sure you have the following installed locally:
 ---
 
 ### Step 1: Bootstrapping a Vanilla AWS Account
-If you are deploying to a brand-new or clean AWS Account, you must initialize the remote state bucket and provisioning runner. Since the repository is private, the most frictionless way to do this in **AWS CloudShell** is to paste the script directly:
+If you are deploying to a brand-new or clean AWS Account, you must initialize the remote state bucket and provisioning runner:
 
-1. Log in to the **AWS Console** as **root** (or an administrator user).
-2. Open **AWS CloudShell** (the terminal icon in the top right header).
-3. Copy the entire contents of [`scripts/bootstrap.sh`](file:///C:/code/sliideTechTest/scripts/bootstrap.sh) and paste it directly into the CloudShell console window. Hit Enter to run the script.
+1. Clone this repository to your local developer machine:
+   ```bash
+   git clone https://github.com/JamesCalleja/sliideTechTest.git
+   ```
+2. Open the file [`scripts/bootstrap.sh`](file:///C:/code/sliideTechTest/scripts/bootstrap.sh) in your local editor and copy its entire contents.
+3. Log in to the **AWS Console** as **root** (or an administrator user).
+4. Open **AWS CloudShell** (the terminal icon in the top right header).
+5. Paste the copied contents directly into the CloudShell console window and hit Enter to run the script.
 5. The script will output the credentials block. Copy the block for your local shell of choice:
 
    **For Windows PowerShell:**
