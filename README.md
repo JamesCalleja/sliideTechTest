@@ -91,43 +91,67 @@ Before deployment, make sure you have the following installed locally:
 ---
 
 ### Step 1: Bootstrapping a Vanilla AWS Account
-If you are deploying to a brand-new or clean AWS Account, you must initialize the remote state bucket and provisioning runner:
+If you are deploying to a brand-new or clean AWS Account, you must initialize the remote state bucket and provisioning runner in **AWS CloudShell**:
 
 1. Log in to the **AWS Console** as root (or an administrator).
 2. Open **AWS CloudShell** (the terminal icon in the top right header).
-3. Copy the contents of [`bootstrap.sh`](file:///C:/code/sliideTechTest/scripts/bootstrap.sh) and paste it into the CloudShell console.
-4. Run the script. This creates:
-   - The S3 state bucket (`sliide-tfstate-<account-id>-us-east-1`)
-   - The DynamoDB state lock table (`sliide-tflocks`)
-   - A highly scoped IAM User (`terragrunt-runner`) with granular permissions to build the POC resources
-   - A custom IAM policy (`sliide-poc-runner-policy`)
-5. The script outputs access key credentials. Set them in your local terminal environment:
+3. Clone your private repository inside CloudShell:
    ```bash
-   export AWS_ACCESS_KEY_ID="AKIAxxxxxxxx"
-   export AWS_SECRET_ACCESS_KEY="xxxxxxxx"
+   gh repo clone JamesCalleja/sliideTechTest
+   cd sliideTechTest
+   bash scripts/bootstrap.sh
+   ```
+4. The script will output the credentials block. Copy the block for your local shell of choice:
+
+   **For Windows PowerShell:**
+   ```powershell
+   $env:AWS_ACCESS_KEY_ID="AKIA47YBKWVXLNQWGJ2U"
+   $env:AWS_SECRET_ACCESS_KEY="kvjc/lyCBFsXlBG2Og5egot3dPGE6deQlIBw/j2i"
+   $env:AWS_DEFAULT_REGION="us-east-1"
+   ```
+
+   **For Bash (Git Bash / Linux / macOS):**
+   ```bash
+   export AWS_ACCESS_KEY_ID="AKIA47YBKWVXLNQWGJ2U"
+   export AWS_SECRET_ACCESS_KEY="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"
    export AWS_DEFAULT_REGION="us-east-1"
    ```
 
 ---
 
 ### Step 2: Deploying the Pipeline
-Once authentication is set up locally, you can deploy the complete infrastructure stack:
+Set the environment variables you copied above in your local terminal, then run the deployment commands:
 
-1. Change directory to the root of the cloned repository:
-   ```bash
+#### Option A: Using Windows PowerShell (Terragrunt < v0.60, e.g., v0.63.6)
+1. Paste the `$env:AWS_*` credentials block into your PowerShell window.
+2. Navigate to the region directory:
+   ```powershell
    cd sliideTechTest
-   ```
-2. Change directory to the target environment region:
-   ```bash
    cd envs/dev/us-east-1
    ```
-3. Run a global plan to inspect the changes:
-   ```bash
-   terragrunt run --all plan
+3. Run a global plan to inspect changes:
+   ```powershell
+   terragrunt run-all plan
    ```
-4. Deploy the entire stack (Terragrunt automatically respects module dependencies like VPC -> KMS -> S3 -> Kinesis -> API Gateway / Firehose / Lambda -> Monitoring):
+4. Deploy the entire stack:
+   ```powershell
+   terragrunt run-all apply
+   ```
+
+#### Option B: Using Bash (Git Bash / Linux / macOS) (Terragrunt >= v0.60)
+1. Paste the `export AWS_*` credentials block into your Bash window.
+2. Navigate to the region directory:
    ```bash
-   terragrunt run --all apply
+   cd sliideTechTest
+   cd envs/dev/us-east-1
+   ```
+3. Run a global plan to inspect changes:
+   ```bash
+   terragrunt run -- run-all plan
+   ```
+4. Deploy the entire stack:
+   ```bash
+   terragrunt run -- run-all apply
    ```
 
 ---
@@ -151,14 +175,14 @@ curl -X POST https://<api-id>.execute-api.us-east-1.amazonaws.com/dev/events \
 ### Using Windows PowerShell:
 In PowerShell, `curl` is aliased to `Invoke-WebRequest` which does not support standard curl flags. Use the native `curl.exe` or `Invoke-RestMethod`:
 
-**Option A (Using native `curl.exe`):**
+**Option 1 (Using native `curl.exe`):**
 ```powershell
 curl.exe -X POST https://<api-id>.execute-api.us-east-1.amazonaws.com/dev/events `
   -H "Content-Type: application/json" `
   -d '{\"userId\": \"user-12345\", \"eventType\": \"article_view\", \"timestamp\": \"2026-07-15T17:00:00Z\", \"payload\": \"{\\\"articleId\\\": \\\"sports-998\\\", \\\"durationSec\\\": 45}\"}'
 ```
 
-**Option B (Using native PowerShell `Invoke-RestMethod`):**
+**Option 2 (Using native PowerShell `Invoke-RestMethod`):**
 ```powershell
 $body = @{
     userId    = "user-12345"
@@ -186,14 +210,24 @@ You can verify the sub-second path by viewing the CloudWatch logs for the Lambda
 To clean up and destroy all resources created during this POC to avoid unwanted AWS charges, run the following commands:
 
 ### Step 1: Destroying Terragrunt Infrastructure
-From your local terminal, navigate to the target region directory and execute a full destroy:
+
+#### Option A: If using Windows PowerShell (Terragrunt < v0.60)
+```powershell
+cd envs/dev/us-east-1
+terragrunt run-all destroy
+```
+
+#### Option B: If using Bash (Git Bash / Linux / macOS) (Terragrunt >= v0.60)
 ```bash
 cd envs/dev/us-east-1
-terragrunt run --all destroy
+terragrunt run -- run-all destroy
 ```
 
 ### Step 2: Undoing the Bootstrapper
-Once the main infrastructure has been destroyed, you can delete the S3 state bucket, DynamoDB lock table, and the IAM runner user/policy by running the teardown script in **AWS CloudShell**:
-1. Copy the contents of [`teardown.sh`](file:///C:/code/sliideTechTest/scripts/teardown.sh) and paste it into AWS CloudShell.
-2. Execute the script. It will clean out all versioned state files, delete the state bucket and locking table, and cleanly remove the `terragrunt-runner` IAM configurations.
+Once the main infrastructure has been destroyed, navigate to the cloned repository in **AWS CloudShell** and run the teardown script:
+```bash
+cd ~/sliideTechTest
+bash scripts/teardown.sh
+```
+
 
