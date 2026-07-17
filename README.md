@@ -95,16 +95,7 @@ If you are deploying to a brand-new or clean AWS Account, you must initialize th
 
 1. Log in to the **AWS Console** as **root** (or an administrator user).
 2. Open **AWS CloudShell** (the terminal icon in the top right header).
-3. Create the file and paste the contents of [`scripts/bootstrap.sh`](file:///C:/code/sliideTechTest/scripts/bootstrap.sh):
-   ```bash
-   cat << 'EOF' > bootstrap.sh
-   # (Paste the full contents of scripts/bootstrap.sh here)
-   EOF
-   ```
-4. Run the script:
-   ```bash
-   bash bootstrap.sh
-   ```
+3. Copy the entire contents of [`scripts/bootstrap.sh`](file:///C:/code/sliideTechTest/scripts/bootstrap.sh) and paste it directly into the CloudShell console window. Hit Enter to run the script.
 5. The script will output the credentials block. Copy the block for your local shell of choice:
 
    **For Windows PowerShell:**
@@ -230,15 +221,6 @@ terragrunt run -- run-all destroy
 ### Step 2: Undoing the Bootstrapper
 Once the main infrastructure has been destroyed, log in to the **AWS Console** as **root/admin**, open **AWS CloudShell**, and paste the teardown script:
 
-1. Create the file and paste the contents of [`scripts/teardown.sh`](file:///C:/code/sliideTechTest/scripts/teardown.sh):
-   ```bash
-   cat << 'EOF' > teardown.sh
-   # (Paste the full contents of scripts/teardown.sh here)
-   EOF
-   ```
-2. Run the script:
-   ```bash
-   bash teardown.sh
-   ```
+1. Copy the entire contents of [`scripts/teardown.sh`](file:///C:/code/sliideTechTest/scripts/teardown.sh) and paste it directly into the CloudShell console window. Hit Enter to run the script.
 
 
