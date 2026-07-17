@@ -24,6 +24,4 @@ dependency "kms" {
 inputs = {
   environment = include.environment.locals.environment
   kms_key_arn = dependency.kms.outputs.key_arn
-  min_shards  = 50
-  max_shards  = 600
 }
