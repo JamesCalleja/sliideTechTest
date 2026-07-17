@@ -149,8 +149,8 @@ resource "aws_kinesis_firehose_delivery_stream" "analytics_pipeline" {
     bucket_arn = var.s3_bucket_arn
 
     # Buffer settings: 128 MB or 60 seconds
-    buffer_size      = 128
-    buffer_interval  = 60
+    buffering_size      = 128
+    buffering_interval  = 60
     compression_format = "UNCOMPRESSED" # Must be UNCOMPRESSED when using format conversion
 
     # S3 Prefix and Partitioning
