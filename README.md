@@ -131,8 +131,9 @@ Once authentication is set up locally, you can deploy the complete infrastructur
 
 ## 📊 Verification and Ingesting Events
 
-Once deployment completes, the `api-gateway` module outputs the `api_url`. You can test ingestion by sending a POST request containing mock JSON data:
+Once deployment completes, the `api-gateway` module outputs the `api_url`. You can test ingestion by sending a POST request containing mock JSON data.
 
+### Using Bash (Linux/macOS/Git Bash):
 ```bash
 curl -X POST https://<api-id>.execute-api.us-east-1.amazonaws.com/dev/events \
   -H "Content-Type: application/json" \
@@ -142,6 +143,28 @@ curl -X POST https://<api-id>.execute-api.us-east-1.amazonaws.com/dev/events \
     "timestamp": "2026-07-15T17:00:00Z",
     "payload": "{\"articleId\": \"sports-998\", \"durationSec\": 45}"
   }'
+```
+
+### Using Windows PowerShell:
+In PowerShell, `curl` is aliased to `Invoke-WebRequest` which does not support standard curl flags. Use the native `curl.exe` or `Invoke-RestMethod`:
+
+**Option A (Using native `curl.exe`):**
+```powershell
+curl.exe -X POST https://<api-id>.execute-api.us-east-1.amazonaws.com/dev/events `
+  -H "Content-Type: application/json" `
+  -d '{\"userId\": \"user-12345\", \"eventType\": \"article_view\", \"timestamp\": \"2026-07-15T17:00:00Z\", \"payload\": \"{\\\"articleId\\\": \\\"sports-998\\\", \\\"durationSec\\\": 45}\"}'
+```
+
+**Option B (Using native PowerShell `Invoke-RestMethod`):**
+```powershell
+$body = @{
+    userId    = "user-12345"
+    eventType = "article_view"
+    timestamp = "2026-07-15T17:00:00Z"
+    payload   = '{"articleId": "sports-998", "durationSec": 45}'
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "https://<api-id>.execute-api.us-east-1.amazonaws.com/dev/events" -Method Post -Body $body -ContentType "application/json"
 ```
 
 *Expected response:*
