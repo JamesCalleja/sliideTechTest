@@ -162,6 +162,9 @@ cat <<EOF > /tmp/sliide_poc_policy.json
         "ec2:DescribeNetworkInterfaces",
         "ec2:CreateNetworkInterface",
         "ec2:DeleteNetworkInterface",
+        "ec2:DescribeVpcEndpointServices",
+        "ec2:DescribeVpcAttribute",
+        "ec2:DescribeTags",
         "ec2:CreateTags"
       ],
       "Resource": "*"
