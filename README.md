@@ -135,7 +135,7 @@ Set the environment variables you copied above in your local terminal, then run 
    ```
 4. Deploy the entire stack:
    ```powershell
-   terragrunt run-all apply
+   terragrunt run-all apply --terragrunt-non-interactive
    ```
 
 #### Option B: Using Bash (Git Bash / Linux / macOS) (Terragrunt >= v0.60)
@@ -151,7 +151,7 @@ Set the environment variables you copied above in your local terminal, then run 
    ```
 4. Deploy the entire stack:
    ```bash
-   terragrunt run -- run-all apply
+   terragrunt run -- run-all apply --non-interactive
    ```
 
 ---
@@ -214,13 +214,13 @@ To clean up and destroy all resources created during this POC to avoid unwanted 
 #### Option A: If using Windows PowerShell (Terragrunt < v0.60)
 ```powershell
 cd envs/dev/us-east-1
-terragrunt run-all destroy
+terragrunt run-all destroy --terragrunt-non-interactive
 ```
 
 #### Option B: If using Bash (Git Bash / Linux / macOS) (Terragrunt >= v0.60)
 ```bash
 cd envs/dev/us-east-1
-terragrunt run -- run-all destroy
+terragrunt run -- run-all destroy --non-interactive
 ```
 
 ### Step 2: Undoing the Bootstrapper
