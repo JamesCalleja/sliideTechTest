@@ -97,11 +97,17 @@ If you are deploying to a brand-new or clean AWS Account, you must initialize th
    ```bash
    git clone https://github.com/JamesCalleja/sliideTechTest.git
    ```
-2. Open the file [`scripts/bootstrap.sh`](file:///C:/code/sliideTechTest/scripts/bootstrap.sh) in your local editor and copy its entire contents.
-3. Log in to the **AWS Console** as **root** (or an administrator user).
-4. Open **AWS CloudShell** (the terminal icon in the top right header).
-5. Paste the copied contents directly into the CloudShell console window and hit Enter to run the script.
-5. The script will output the credentials block. Copy the block for your local shell of choice:
+2. Log in to the **AWS Console** as **root** (or an administrator user).
+3. Open **AWS CloudShell** (the terminal icon in the top right header).
+4. Upload the bootstrap script directly to CloudShell:
+   * Click the **Actions** dropdown menu in the top right of the CloudShell terminal window.
+   * Select **Upload file**.
+   * Select the `scripts/bootstrap.sh` file from your local computer.
+5. Execute the script:
+   ```bash
+   bash bootstrap.sh
+   ```
+6. The script will output the credentials block. Copy the block for your local shell of choice:
 
    **For Windows PowerShell:**
    ```powershell
