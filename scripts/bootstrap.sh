@@ -363,35 +363,32 @@ KEYS_JSON=$(aws iam create-access-key --user-name "$USER_NAME")
 ACCESS_KEY_ID=$(echo "$KEYS_JSON" | jq -r '.AccessKey.AccessKeyId')
 SECRET_ACCESS_KEY=$(echo "$KEYS_JSON" | jq -r '.AccessKey.SecretAccessKey')
 
-cat << EOF
-------------------------------------------------------
-BOOTSTRAP COMPLETE!
-S3 Bucket:             $BUCKET_NAME
-DynamoDB Lock Table:   $DYNAMODB_TABLE
-IAM User:              $USER_NAME
-IAM Granular Policy:   $POLICY_ARN
-AWS_ACCESS_KEY_ID:     $ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY: $SECRET_ACCESS_KEY
-AWS_DEFAULT_REGION:    $REGION
-------------------------------------------------------
-To authenticate as the runner, copy and paste the commands below into your local terminal:
-
-=== Option A: For Bash / Git Bash / Linux / macOS ===
-export AWS_ACCESS_KEY_ID="$ACCESS_KEY_ID"
-export AWS_SECRET_ACCESS_KEY="$SECRET_ACCESS_KEY"
-export AWS_DEFAULT_REGION="$REGION"
-
-=== Option B: For Windows PowerShell ===
-\$env:AWS_ACCESS_KEY_ID="$ACCESS_KEY_ID"
-\$env:AWS_SECRET_ACCESS_KEY="$SECRET_ACCESS_KEY"
-\$env:AWS_DEFAULT_REGION="$REGION"
-
-=== Option C: For Windows Command Prompt (CMD) ===
-set AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID
-set AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY
-set AWS_DEFAULT_REGION=$REGION
-------------------------------------------------------
-Please save these credentials immediately, as the Secret Access Key cannot be retrieved again.
-EOF
-
+echo "------------------------------------------------------"
+echo "BOOTSTRAP COMPLETE!"
+echo "S3 Bucket:             $BUCKET_NAME"
+echo "DynamoDB Lock Table:   $DYNAMODB_TABLE"
+echo "IAM User:              $USER_NAME"
+echo "IAM Granular Policy:   $POLICY_ARN"
+echo "AWS_ACCESS_KEY_ID:     $ACCESS_KEY_ID"
+echo "AWS_SECRET_ACCESS_KEY: $SECRET_ACCESS_KEY"
+echo "AWS_DEFAULT_REGION:    $REGION"
+echo "------------------------------------------------------"
+echo "To authenticate, copy the block for your shell below:"
+echo ""
+echo "# Option A: For Bash / Git Bash / Linux / macOS"
+echo "export AWS_ACCESS_KEY_ID=\"$ACCESS_KEY_ID\""
+echo "export AWS_SECRET_ACCESS_KEY=\"$SECRET_ACCESS_KEY\""
+echo "export AWS_DEFAULT_REGION=\"$REGION\""
+echo ""
+echo "# Option B: For Windows PowerShell"
+echo '$env:AWS_ACCESS_KEY_ID="'$ACCESS_KEY_ID'"'
+echo '$env:AWS_SECRET_ACCESS_KEY="'$SECRET_ACCESS_KEY'"'
+echo '$env:AWS_DEFAULT_REGION="'$REGION'"'
+echo ""
+echo "# Option C: For Windows Command Prompt (CMD)"
+echo "set AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID"
+echo "set AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY"
+echo "set AWS_DEFAULT_REGION=$REGION"
+echo "------------------------------------------------------"
+echo "Please save these credentials immediately, as the Secret Access Key cannot be retrieved again."
 
