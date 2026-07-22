@@ -48,8 +48,9 @@ module "lambda_function" {
   attach_network_policy  = true
 
   # Custom IAM policy document to allow Kinesis and DLQ access
-  attach_policy_json_strings = true
-  policy_json_strings = [
+  attach_policy_jsons    = true
+  number_of_policy_jsons = 1
+  policy_jsons = [
     jsonencode({
       Version = "2012-10-17"
       Statement = [

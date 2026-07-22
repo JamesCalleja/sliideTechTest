@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+# Only exit on error if running as a non-interactive script
+[[ $- != *i* ]] && set -e
 
 # Configuration
 REGION="us-east-1"
@@ -124,7 +125,8 @@ cat <<EOF > /tmp/sliide_poc_policy.json
         "kms:CancelKeyDeletion",
         "kms:EnableKeyRotation",
         "kms:DisableKeyRotation",
-        "kms:GetKeyRotationStatus"
+        "kms:GetKeyRotationStatus",
+        "kms:ListResourceTags"
       ],
       "Resource": "*"
     },
@@ -150,6 +152,8 @@ cat <<EOF > /tmp/sliide_poc_policy.json
         "ec2:CreateSecurityGroup",
         "ec2:DeleteSecurityGroup",
         "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSecurityGroupRules",
+        "ec2:DescribePrefixLists",
         "ec2:AuthorizeSecurityGroupIngress",
         "ec2:AuthorizeSecurityGroupEgress",
         "ec2:RevokeSecurityGroupIngress",
@@ -165,7 +169,16 @@ cat <<EOF > /tmp/sliide_poc_policy.json
         "ec2:DescribeVpcEndpointServices",
         "ec2:DescribeVpcAttribute",
         "ec2:DescribeTags",
-        "ec2:CreateTags"
+        "ec2:CreateTags",
+        "ec2:DescribeNetworkAcls",
+        "ec2:CreateNetworkAcl",
+        "ec2:DeleteNetworkAcl",
+        "ec2:ReplaceNetworkAclAssociation",
+        "ec2:ReplaceNetworkAclEntry",
+        "ec2:DescribeSecurityGroupRules",
+        "ec2:DescribePrefixLists",
+        "ec2:DeleteNetworkAclEntry",
+        "ec2:CreateNetworkAclEntry"
       ],
       "Resource": "*"
     },
@@ -281,6 +294,21 @@ cat <<EOF > /tmp/sliide_poc_policy.json
       "Resource": "*"
     },
     {
+      "Sid": "CloudWatchLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:DeleteLogGroup",
+        "logs:DescribeLogGroups",
+        "logs:ListTagsForResource",
+        "logs:TagResource",
+        "logs:UntagResource",
+        "logs:PutRetentionPolicy",
+        "logs:DeleteRetentionPolicy"
+      ],
+      "Resource": "*"
+    },
+    {
       "Sid": "SNSTopics",
       "Effect": "Allow",
       "Action": [
@@ -295,6 +323,7 @@ cat <<EOF > /tmp/sliide_poc_policy.json
       "Effect": "Allow",
       "Action": [
         "iam:CreateRole",
+        "iam:GetPolicy",
         "iam:DeleteRole",
         "iam:GetRole",
         "iam:UpdateRole",
@@ -311,12 +340,14 @@ cat <<EOF > /tmp/sliide_poc_policy.json
         "iam:CreatePolicyVersion",
         "iam:DeletePolicyVersion",
         "iam:ListRolePolicies",
-        "iam:ListAttachedRolePolicies"
+        "iam:ListAttachedRolePolicies",
+        "iam:TagRole",
+        "iam:TagPolicy",
+        "iam:ListInstanceProfilesForRole",
+        "iam:ListInstanceProfilesForRole",
+        "iam:ListPolicyVersions"
       ],
-      "Resource": [
-        "arn:aws:iam::${ACCOUNT_ID}:role/sliide-*",
-        "arn:aws:iam::${ACCOUNT_ID}:policy/sliide-*"
-      ]
+      "Resource": "*"
     }
   ]
 }
@@ -328,7 +359,8 @@ POLICY_ARN="arn:aws:iam::${ACCOUNT_ID}:policy/${POLICY_NAME}"
 
 echo "Registering custom IAM policy in AWS Catalog..."
 if aws iam get-policy --policy-arn "$POLICY_ARN" >/dev/null 2>&1; then
-  echo "Policy already exists. Creating a new default version..."
+  echo "Policy already exists. Pruning old versions and creating a new default version..."
+  aws iam list-policy-versions --policy-arn "$POLICY_ARN" --query "Versions[?IsDefaultVersion==\`false\`].VersionId" --output text 2>/dev/null | xargs -n 1 -I {} aws iam delete-policy-version --policy-arn "$POLICY_ARN" --version-id {} 2>/dev/null || true
   aws iam create-policy-version \
     --policy-arn "$POLICY_ARN" \
     --policy-document file:///tmp/sliide_poc_policy.json \
@@ -347,13 +379,7 @@ aws iam attach-user-policy \
 
 # Clean up any existing access keys first to ensure creation of a fresh key pair succeeds
 echo "Cleaning up any existing access keys for $USER_NAME..."
-EXISTING_KEYS=$(aws iam list-access-keys --user-name "$USER_NAME" --query "AccessKeyMetadata[].AccessKeyId" --output text 2>/dev/null || echo "")
-for key in $EXISTING_KEYS; do
-  if [ "$key" != "None" ] && [ ! -z "$key" ]; then
-    echo "Deleting old access key: $key"
-    aws iam delete-access-key --user-name "$USER_NAME" --access-key-id "$key"
-  fi
-done
+aws iam list-access-keys --user-name "$USER_NAME" --query "AccessKeyMetadata[].AccessKeyId" --output text 2>/dev/null | xargs -n 1 -I {} aws iam delete-access-key --user-name "$USER_NAME" --access-key-id {} 2>/dev/null || true
 
 # Create Access Keys
 echo "Generating new Access Keys for $USER_NAME..."

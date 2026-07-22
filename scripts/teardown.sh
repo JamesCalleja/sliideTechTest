@@ -87,6 +87,17 @@ else
   echo "IAM policy does not exist. Skipping."
 fi
 
+# 5. Clean up local Terragrunt cache directories
+echo "Checking for local .terragrunt-cache directories to delete..."
+# Search and delete only if we are in the repository root or subfolders
+if [ -d "envs" ] || [ -d "modules" ] || [ -d "../envs" ]; then
+  echo "Deleting .terragrunt-cache directories..."
+  find . -type d -name ".terragrunt-cache" -prune -exec rm -rf {} + 2>/dev/null || true
+  echo "Local cache directories deleted."
+else
+  echo "Not in repository directory structure. Skipping cache deletion."
+fi
+
 echo "----------------------------------------"
 echo "TEARDOWN COMPLETE!"
 echo "All bootstrapped resources have been removed."

@@ -31,9 +31,13 @@ resource "aws_api_gateway_method_response" "post_200" {
   status_code = "200"
 }
 
+resource "random_id" "apigw_suffix" {
+  byte_length = 4
+}
+
 # IAM Role for API Gateway to write to Kinesis
 resource "aws_iam_role" "apigw_kinesis" {
-  name = "sliide-apigw-kinesis-role-${var.environment}"
+  name = "sliide-apigw-kinesis-role-${var.environment}-${random_id.apigw_suffix.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -50,7 +54,7 @@ resource "aws_iam_role" "apigw_kinesis" {
 }
 
 resource "aws_iam_policy" "apigw_kinesis_policy" {
-  name        = "sliide-apigw-kinesis-policy-${var.environment}"
+  name        = "sliide-apigw-kinesis-policy-${var.environment}-${random_id.apigw_suffix.hex}"
   description = "Allows API Gateway to write events to Kinesis stream"
 
   policy = jsonencode({

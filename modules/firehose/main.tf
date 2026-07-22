@@ -49,9 +49,13 @@ resource "aws_glue_catalog_table" "events_table" {
   }
 }
 
+resource "random_id" "firehose_suffix" {
+  byte_length = 4
+}
+
 # IAM Role for Firehose
 resource "aws_iam_role" "firehose" {
-  name = "sliide-firehose-role-${var.environment}"
+  name = "sliide-firehose-role-${var.environment}-${random_id.firehose_suffix.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -68,7 +72,7 @@ resource "aws_iam_role" "firehose" {
 }
 
 resource "aws_iam_policy" "firehose_policy" {
-  name        = "sliide-firehose-policy-${var.environment}"
+  name        = "sliide-firehose-policy-${var.environment}-${random_id.firehose_suffix.hex}"
   description = "Allows Kinesis Firehose to read from Kinesis, write to S3, and access Glue Catalog"
 
   policy = jsonencode({
@@ -138,6 +142,10 @@ resource "aws_iam_role_policy_attachment" "firehose" {
 resource "aws_kinesis_firehose_delivery_stream" "analytics_pipeline" {
   name        = "sliide-analytics-firehose-${var.environment}"
   destination = "extended_s3"
+
+  depends_on = [
+    aws_iam_role_policy_attachment.firehose
+  ]
 
   kinesis_source_configuration {
     kinesis_stream_arn = var.kinesis_stream_arn
