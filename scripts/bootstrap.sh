@@ -242,7 +242,9 @@ cat <<EOF > /tmp/sliide_poc_policy.json
       "Resource": [
         "arn:aws:glue:${REGION}:${ACCOUNT_ID}:catalog",
         "arn:aws:glue:${REGION}:${ACCOUNT_ID}:database/sliide_*",
-        "arn:aws:glue:${REGION}:${ACCOUNT_ID}:table/sliide_*/*"
+        "arn:aws:glue:${REGION}:${ACCOUNT_ID}:table/sliide_*/*",
+        "arn:aws:glue:${REGION}:${ACCOUNT_ID}:userDefinedFunction/sliide_*",
+        "arn:aws:glue:${REGION}:${ACCOUNT_ID}:userDefinedFunction/sliide_*/*"
       ]
     },
     {
