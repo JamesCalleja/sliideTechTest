@@ -39,6 +39,7 @@ The design is optimized for cost, scalability (handling 50k to 500k events/sec),
 4. **Analytics Storage (Snappy/Parquet):** Kinesis Firehose performs inline conversion of JSON events to Snappy-compressed Parquet format, saving up to 80% on storage costs and accelerating Amazon Athena analytical queries.
 5. **Failover Resilience:** SQS Dead Letter Queues (DLQs) catch Lambda processing failures (poison pills), and Firehose utilizes backup S3 prefixes to capture processing/delivery errors.
 6. **Alarms & Alerting:** Automated CloudWatch Alarms notify an SNS topic (subscribable via email or SMS) on stream throttles, execution errors, consumer processing lag (maximum iterator age), S3 delivery failure, or visibility of dead-letter messages.
+7. **Edge Security Shielding (WAF):** The ingestion REST API is protected by a regional **AWS WAFv2 Web ACL** that applies IP rate-limiting (blocking clients exceeding 2000 requests per 5 minutes) and the AWS Managed Common Rule Set to block SQLi, XSS, and bad input payloads at the edge.
 
 ---
 
