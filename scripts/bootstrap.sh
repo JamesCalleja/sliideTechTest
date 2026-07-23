@@ -272,7 +272,9 @@ cat <<EOF > /tmp/sliide_poc_policy.json
         "lambda:CreateEventSourceMapping",
         "lambda:DeleteEventSourceMapping",
         "lambda:GetEventSourceMapping",
-        "lambda:ListEventSourceMappings"
+        "lambda:ListEventSourceMappings",
+        "lambda:TagResource",
+        "lambda:UntagResource"
       ],
       "Resource": "*"
     },
