@@ -161,3 +161,76 @@ resource "aws_api_gateway_stage" "events" {
     Environment = var.environment
   }
 }
+
+# Regional Web Application Firewall (WAF) to protect the API Gateway endpoint
+resource "aws_wafv2_web_acl" "api_waf" {
+  name        = "sliide-api-waf-${var.environment}"
+  description = "WAF for Sliide events API Gateway"
+  scope       = "REGIONAL"
+
+  default_action {
+    allow {}
+  }
+
+  # 1. Rate-limiting Rule (DDoS & API abuse mitigation)
+  rule {
+    name     = "RateLimit"
+    priority = 1
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = 2000 # Max 2000 requests per 5 minutes per IP
+        aggregate_key_type = "IP"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "SliideApiRateLimit"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  # 2. AWS Managed Common Rule Set (protection against SQLi, XSS, etc.)
+  rule {
+    name     = "AWSManagedRulesCommonRuleSet"
+    priority = 2
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedRulesCommonRuleSet"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "SliideApiWAF"
+    sampled_requests_enabled   = true
+  }
+
+  tags = {
+    Environment = var.environment
+  }
+}
+
+# Associate the WAF with the API Gateway stage
+resource "aws_wafv2_web_acl_association" "api_waf_assoc" {
+  resource_arn = aws_api_gateway_stage.events.arn
+  web_acl_arn  = aws_wafv2_web_acl.api_waf.arn
+}

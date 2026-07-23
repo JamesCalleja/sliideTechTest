@@ -309,6 +309,14 @@ cat <<EOF > /tmp/sliide_poc_policy.json
       "Resource": "*"
     },
     {
+      "Sid": "WAFv2Management",
+      "Effect": "Allow",
+      "Action": [
+        "wafv2:*"
+      ],
+      "Resource": "*"
+    },
+    {
       "Sid": "SNSTopics",
       "Effect": "Allow",
       "Action": [
