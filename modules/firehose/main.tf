@@ -28,12 +28,12 @@ resource "aws_glue_catalog_table" "events_table" {
     }
 
     columns {
-      name = "userId"
+      name = "userid"
       type = "string"
     }
 
     columns {
-      name = "eventType"
+      name = "eventtype"
       type = "string"
     }
 
