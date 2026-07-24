@@ -297,7 +297,10 @@ cat <<EOF > /tmp/sliide_poc_policy.json
         "cloudwatch:DeleteAlarms",
         "cloudwatch:DescribeAlarms",
         "cloudwatch:ListMetrics",
-        "cloudwatch:GetMetricData"
+        "cloudwatch:GetMetricData",
+        "cloudwatch:ListTagsForResource",
+        "cloudwatch:TagResource",
+        "cloudwatch:UntagResource"
       ],
       "Resource": "*"
     },
