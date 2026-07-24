@@ -153,7 +153,9 @@ resource "aws_api_gateway_deployment" "events" {
   }
 
   depends_on = [
-    aws_api_gateway_integration.kinesis
+    aws_api_gateway_integration.kinesis,
+    aws_api_gateway_integration_response.kinesis_200,
+    aws_api_gateway_method_response.post_200
   ]
 }
 
