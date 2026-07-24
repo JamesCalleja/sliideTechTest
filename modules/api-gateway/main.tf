@@ -102,10 +102,14 @@ resource "aws_api_gateway_integration" "kinesis" {
   # The PartitionKey is mapped to $.userId or a default random uuid if userId is not present
   request_templates = {
     "application/json" = <<EOF
+#set($userId = $input.path('$.userId'))
+#if("$!userId" == "")
+  #set($userId = $context.requestId)
+#end
 {
   "StreamName": "${var.kinesis_stream_name}",
   "Data": "$util.base64Encode($input.json('$'))",
-  "PartitionKey": "$util.defaultIfNull($input.path('$.userId'), $context.requestId)"
+  "PartitionKey": "$userId"
 }
 EOF
   }
@@ -140,6 +144,7 @@ resource "aws_api_gateway_deployment" "events" {
       aws_api_gateway_resource.events.id,
       aws_api_gateway_method.post.id,
       aws_api_gateway_integration.kinesis.id,
+      aws_api_gateway_integration.kinesis.request_templates,
     ]))
   }
 
